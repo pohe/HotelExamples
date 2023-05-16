@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿@using HotelExamples.Services
+@using HotelExamples.Interfaces
+
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -28,6 +33,28 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
+                        @{
+                            
+                            string email;
+                            if (ViewData["Email"] != null)
+                            {
+                                email = (string)ViewData["Email"];
+                            
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-page="/Users/Login" asp-page-handler="Logout">Logout</a>
+                                </li>
+                                <li class="nav-item" class="float-right" style="font-size: medium">
+                                    @ViewData["Email"]
+                                </li>
+                            }
+                            else
+                            {
+
+                                <li class="nav-item">
+                                    <a asp-page="/Users/LogIn" class="float-right btn btn-primary" style="font-size: medium">Log In</a>
+                                </li>
+                            }
+                        }
                     </ul>
                 </div>
             </div>

@@ -47,6 +47,24 @@
                 </select>
             </div>
             <div class="form-group">
+                 <label asp-for="@Model.Hotel.PaymentMethods" class="control-label"></label>
+            </br>
+            @foreach (var c in Model.PaymentMethods)
+            {
+                <input name="AreChecked" type="checkbox" value="@c.P_id"/> @c.P_method
+            }
+            </div>
+            <div class="form-group">
+                <label asp-for="@Model.Hotel.PaymentMethods" class="control-label">(Anvendes ikke)</label>
+                </br>
+                <select asp-for="@Model.SelectedPaymentMethod"> 
+                    @foreach (var c in Model.PaymentMethods)
+                    {
+                        <option value="@c.P_id">@c.P_method</option>   
+                    }
+                </select>
+            </div>
+            <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

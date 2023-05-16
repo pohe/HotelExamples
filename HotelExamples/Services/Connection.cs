@@ -12,6 +12,11 @@
             //connectionString = Configuration["ConnectionStrings:DefaultConnection"];
         }
 
+        public Connection()
+        {
+            connectionString = Secret.ConnectionString;
+        }
+
     }
 
 }

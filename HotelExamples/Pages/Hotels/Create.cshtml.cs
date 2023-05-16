@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Runtime.CompilerServices;
 
 namespace HotelExamples.Pages.Hotels
 {
@@ -14,26 +15,44 @@ namespace HotelExamples.Pages.Hotels
         public Hotel Hotel { get; set; }
 
         private IHotelService hservice;
+        private IPaymentService pService;
         
+        public List<PaymentMethod> PaymentMethods { get; set; }
+
         [BindProperty]
         public IFormFile Photo { get; set; }
 
+        [BindProperty]
+        public List<int> AreChecked { get; set; }
+
+        [BindProperty]
+        public int SelectedPaymentMethod { get; set; }
+
         private IWebHostEnvironment webHostEnvironment;
 
-        public CreateModel(IHotelService hotelService, IWebHostEnvironment webHost)
+        public CreateModel(IHotelService hotelService, IPaymentService paymentService, IWebHostEnvironment webHost)
         {
             hservice = hotelService;
+            pService = paymentService;
             webHostEnvironment = webHost;
         }
 
        
-        public void OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
+            string email = HttpContext.Session.GetString("Email");
+            if (email == null || email == "")
+            {
+                return RedirectToPage("/Users/Login");
+            }
+            ViewData["Email"] = email;
+            PaymentMethods = await pService.GetAllPaymentMethodsAsync();
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(string vip_id)
         {
-            //Hotel.HotelType = HotelTypes.Business;
+            
             if (vip_id == "VIP")
                 Hotel.VIP = true;
             else if (vip_id == "NOTVIP")
@@ -50,6 +69,14 @@ namespace HotelExamples.Pages.Hotels
                 }
 
                 Hotel.HotelImage = ProcessUploadedFile();
+            }
+            List <int> pIds= new List<int>();
+            pIds.AddRange(AreChecked);
+            
+            foreach (int id in pIds)
+            {
+                PaymentMethod p = await pService.GetPaymentMethodFromIdAsync(id);
+                Hotel.PaymentMethods.Add(p);
             }
             await hservice.CreateHotelAsync(Hotel);
             return RedirectToPage("GetAllHotels");

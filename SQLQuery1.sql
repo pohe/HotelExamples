@@ -1,0 +1,1 @@
+﻿select paymentmethods.P_id, paymentmethods.P_method from paymentmethods, Hotel_PaymentsMethods where paymentmethods.P_id = Hotel_PaymentsMethods.P_id AND Hotel_PaymentsMethods.Hotel_No = 1

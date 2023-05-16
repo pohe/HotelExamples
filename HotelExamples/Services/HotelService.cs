@@ -14,15 +14,49 @@ namespace HotelExamples.Services
         private String updateSql = "update Hotel " +
                                    "set Hotel_No= @HotelID, Name=@Navn, Address=@Adresse " +
                                    "where Hotel_No = @ID";
+        private String insertPaymentMethodSql = "insert into Hotel_PaymentsMethods Values (@P_id, @Hotel_No)";
+
 
         public HotelService(IConfiguration configuration) : base(configuration)
         {
 
         }
 
-        //public HotelService(string connnectionString) : base(connnectionString)
-        //{
-        //}
+        public async Task<bool> CreateHotelPaymentMethodAsync(int payId, int hotelNo)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(insertPaymentMethodSql, connection))
+                {
+                    command.Parameters.AddWithValue("@P_id", payId);
+                    command.Parameters.AddWithValue("@Hotel_No", hotelNo);
+                    try
+                    {
+                        command.Connection.Open();
+                        int noOfRows = await command.ExecuteNonQueryAsync(); //bruges ved update, delete, insert
+
+                        if (noOfRows == 1)
+                        {
+                            return true;
+                        }
+
+                        return false;
+                    }
+                    catch (SqlException sqlex)
+                    {
+                        Console.WriteLine("Database error");
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Generel error");
+
+                    }
+                }
+
+            }
+            return false;
+        }
 
 
         public async Task<bool> CreateHotelAsync(Hotel hotel)
@@ -50,11 +84,16 @@ namespace HotelExamples.Services
                     {
                         command.Connection.Open();
                         int noOfRows = await command.ExecuteNonQueryAsync(); //bruges ved update, delete, insert
+                        
+                        
+                        foreach(PaymentMethod p in hotel.PaymentMethods)
+                        {
+                            CreateHotelPaymentMethodAsync(p.P_id, hotel.HotelNr);
+                        }
                         if (noOfRows == 1)
                         {
                             return true;
                         }
-
                         return false;
                     }
                     catch (SqlException sqlex)
@@ -134,6 +173,7 @@ namespace HotelExamples.Services
                             {
                                 hotel.HotelImage = reader.GetString(5);
                             }
+                            hotel.PaymentMethods = await new PaymentMethodService().GetAllPaymentMethodsForHotelAsync(hotelNr);
                             hoteller.Add(hotel);
                         }
                     }
