@@ -1,5 +1,6 @@
 ﻿using HotelExamples.Interfaces;
 using HotelExamples.Models;
+using Microsoft.AspNetCore.Razor.TagHelpers;
 using System.Data.SqlClient;
 
 namespace HotelExamples.Services
@@ -45,12 +46,13 @@ namespace HotelExamples.Services
                     catch (SqlException sqlex)
                     {
                         Console.WriteLine("Database error");
+                        throw sqlex;
 
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Generel error");
-
+                        throw ex;
                     }
                 }
 
@@ -99,12 +101,12 @@ namespace HotelExamples.Services
                     catch (SqlException sqlex)
                     {
                         Console.WriteLine("Database error");
-
+                        throw sqlex;
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine("Generel error");
-
+                        throw ex;
                     }
                 }
 

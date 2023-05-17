@@ -8,7 +8,7 @@ namespace HotelExamples.Pages.Users
 {
     public class CreateUserModel : PageModel
     {
-        public string  Message { get; set; }
+        public string Message { get; set; }
         [BindProperty]
         public User User { get; set; }
 
@@ -17,33 +17,49 @@ namespace HotelExamples.Pages.Users
         private IUserService uService;
         public CreateUserModel(IUserService userservice)
         {
-            uService= userservice;
+            uService = userservice;
         }
         public IActionResult OnGet()
         {
-            string email = HttpContext.Session.GetString("Email");
-            if (email == null || email == "")
+            try
             {
-                return RedirectToPage("/Users/Login");
+                string email = HttpContext.Session.GetString("Email");
+                if (email == null || email == "")
+                {
+                    return RedirectToPage("/Users/Login");
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewData["ErrorMessage"] = ex.Message;
             }
             return Page();
+
         }
 
         public IActionResult OnPost()
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Page();
+                if (!ModelState.IsValid)
+                {
+                    return Page();
+                }
+                if (User.Password != Password2)
+                {
+                    Message = "Passwords er ikke ens";
+                    return Page();
+                }
+                else
+                {
+                    MockData.UserData.Add(User);
+                    return RedirectToPage("Login");
+                }
             }
-            if (User.Password != Password2)
+            catch (Exception ex)
             {
-                Message = "Passwords er ikke ens";
+                ViewData["ErrorMessage"] = ex.Message;
                 return Page();
-            }
-            else
-            {
-                MockData.UserData.Add(User);
-                return RedirectToPage("Login");
             }
         }
     }

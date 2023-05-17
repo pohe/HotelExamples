@@ -16,7 +16,7 @@ namespace HotelExamples.Pages.Hotels
 
         private IHotelService hservice;
         private IPaymentService pService;
-        
+
         public List<PaymentMethod> PaymentMethods { get; set; }
 
         [BindProperty]
@@ -37,47 +37,62 @@ namespace HotelExamples.Pages.Hotels
             webHostEnvironment = webHost;
         }
 
-       
+
         public async Task<IActionResult> OnGetAsync()
         {
-            string email = HttpContext.Session.GetString("Email");
-            if (email == null || email == "")
+            try
             {
-                return RedirectToPage("/Users/Login");
+                string email = HttpContext.Session.GetString("Email");
+                if (email == null || email == "")
+                {
+                    return RedirectToPage("/Users/Login");
+                }
+                PaymentMethods = await pService.GetAllPaymentMethodsAsync();
             }
-            PaymentMethods = await pService.GetAllPaymentMethodsAsync();
+            catch (Exception ex)
+            {
+                PaymentMethods=new List<PaymentMethod>();
+                ViewData["ErrorMessage"] = ex.Message;
+            }
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(string vip_id)
         {
-            
-            if (vip_id == "VIP")
-                Hotel.VIP = true;
-            else if (vip_id == "NOTVIP")
-                Hotel.VIP = false;
-            else
-                Hotel.VIP = null;
-
-            if (Photo != null)
+            try
             {
-                if (Hotel.HotelImage != null)
+                if (vip_id == "VIP")
+                    Hotel.VIP = true;
+                else if (vip_id == "NOTVIP")
+                    Hotel.VIP = false;
+                else
+                    Hotel.VIP = null;
+
+                if (Photo != null)
                 {
-                    string filePath = Path.Combine(webHostEnvironment.WebRootPath, "/images/Hotels", Hotel.HotelImage);
-                    System.IO.File.Delete(filePath);
-                }
+                    if (Hotel.HotelImage != null)
+                    {
+                        string filePath = Path.Combine(webHostEnvironment.WebRootPath, "/images/Hotels", Hotel.HotelImage);
+                        System.IO.File.Delete(filePath);
+                    }
 
-                Hotel.HotelImage = ProcessUploadedFile();
+                    Hotel.HotelImage = ProcessUploadedFile();
+                }
+                List<int> pIds = new List<int>();
+                pIds.AddRange(AreChecked);
+
+                foreach (int id in pIds)
+                {
+                    PaymentMethod p = await pService.GetPaymentMethodFromIdAsync(id);
+                    Hotel.PaymentMethods.Add(p);
+                }
+                await hservice.CreateHotelAsync(Hotel);
             }
-            List <int> pIds= new List<int>();
-            pIds.AddRange(AreChecked);
-            
-            foreach (int id in pIds)
+            catch (Exception ex)
             {
-                PaymentMethod p = await pService.GetPaymentMethodFromIdAsync(id);
-                Hotel.PaymentMethods.Add(p);
+
+                ViewData["ErrorMessage"] = ex.Message;
             }
-            await hservice.CreateHotelAsync(Hotel);
             return RedirectToPage("GetAllHotels");
         }
 

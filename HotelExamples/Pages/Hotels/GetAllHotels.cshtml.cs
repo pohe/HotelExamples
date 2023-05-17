@@ -14,7 +14,7 @@ namespace HotelExamples.Pages.Hotels
         public List<Hotel> Hotels { get; set; }
         public List<PaymentMethod> PaymentMethods { get; set; }
         private IHotelService hService;
-        
+
         public GetAllHotelsModel(IHotelService hotelService)
         {
             hService = hotelService;
@@ -22,18 +22,26 @@ namespace HotelExamples.Pages.Hotels
 
         public async Task<IActionResult> OnGetAsync()
         {
-            string email = HttpContext.Session.GetString("Email");
-            if (email == null || email== "")
+            try
             {
-                return RedirectToPage("/Users/Login");
+                string email = HttpContext.Session.GetString("Email");
+                if (email == null || email == "")
+                {
+                    return RedirectToPage("/Users/Login");
+                }
+                if (!string.IsNullOrEmpty(FilterCriteria))
+                {
+                    Hotels = await hService.GetHotelsByNameAsync(FilterCriteria);
+                }
+                else
+                {
+                    Hotels = await hService.GetAllHotelAsync();
+                }
             }
-            if (!string.IsNullOrEmpty(FilterCriteria))
+            catch (Exception ex)
             {
-                Hotels = await hService.GetHotelsByNameAsync(FilterCriteria);
-            }
-            else
-            {
-                Hotels = await hService.GetAllHotelAsync();
+                Hotels = new List<Hotel>();
+                ViewData["ErrorMessage"] = ex.Message;
             }
             return Page();
         }

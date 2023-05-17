@@ -24,10 +24,10 @@ namespace HotelExamples.Pages.Users
         public void OnGet()
         {
             string email = HttpContext.Session.GetString("Email");
-            if (email!=null)
+            if (email != null)
             {
                 ViewData["Email"] = email;
-            } 
+            }
             else
             {
                 ViewData["Email"] = null;
@@ -37,22 +37,32 @@ namespace HotelExamples.Pages.Users
         public void OnGetLogout()
         {
             HttpContext.Session.Remove("Email");
-            
+
         }
 
         public IActionResult OnPost()
         {
-            User loginUser = _userService.VerifyUser(Email, PassWord);
-            if (loginUser != null)
+            try
             {
-                HttpContext.Session.SetString("Email", loginUser.Email);
-                return RedirectToPage("/Hotels/GetAllHotels");
+
+
+                User loginUser = _userService.VerifyUser(Email, PassWord);
+                if (loginUser != null)
+                {
+                    HttpContext.Session.SetString("Email", loginUser.Email);
+                    return RedirectToPage("/Hotels/GetAllHotels");
+                }
+                else
+                {
+                    Message = "Invalid email or password";
+                    Email = "";
+                    PassWord = "";
+                    return Page();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Message = "Invalid email or password";
-                Email = "";
-                PassWord = "";
+                ViewData["ErrorMessage"] = ex.Message;
                 return Page();
             }
 
