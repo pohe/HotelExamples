@@ -27,7 +27,6 @@ namespace HotelExamples.Pages.Hotels
             {
                 return RedirectToPage("/Users/Login");
             }
-            ViewData["Email"] = email;
             if (!string.IsNullOrEmpty(FilterCriteria))
             {
                 Hotels = await hService.GetHotelsByNameAsync(FilterCriteria);

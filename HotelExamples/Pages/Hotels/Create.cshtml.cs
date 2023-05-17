@@ -45,7 +45,6 @@ namespace HotelExamples.Pages.Hotels
             {
                 return RedirectToPage("/Users/Login");
             }
-            ViewData["Email"] = email;
             PaymentMethods = await pService.GetAllPaymentMethodsAsync();
             return Page();
         }

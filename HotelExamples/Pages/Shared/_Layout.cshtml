@@ -1,5 +1,6 @@
 ﻿@using HotelExamples.Services
 @using HotelExamples.Interfaces
+@inject IHttpContextAccessor httpContext 
 
 
 
@@ -34,17 +35,14 @@
                             <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
                         @{
-                            
-                            string email;
-                            if (ViewData["Email"] != null)
+                            string email = httpContext.HttpContext.Session.GetString("Email");
+                            if (email != null)
                             {
-                                email = (string)ViewData["Email"];
-                            
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-page="/Users/Login" asp-page-handler="Logout">Logout</a>
                                 </li>
                                 <li class="nav-item" class="float-right" style="font-size: medium">
-                                    @ViewData["Email"]
+                                    @email
                                 </li>
                             }
                             else

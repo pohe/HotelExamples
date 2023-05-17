@@ -37,7 +37,7 @@ namespace HotelExamples.Pages.Users
         public void OnGetLogout()
         {
             HttpContext.Session.Remove("Email");
-            ViewData["Email"] = null;
+            
         }
 
         public IActionResult OnPost()
@@ -46,7 +46,6 @@ namespace HotelExamples.Pages.Users
             if (loginUser != null)
             {
                 HttpContext.Session.SetString("Email", loginUser.Email);
-                ViewData["Email"] = loginUser.Email;
                 return RedirectToPage("/Hotels/GetAllHotels");
             }
             else

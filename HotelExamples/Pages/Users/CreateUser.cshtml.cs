@@ -26,7 +26,6 @@ namespace HotelExamples.Pages.Users
             {
                 return RedirectToPage("/Users/Login");
             }
-            ViewData["Email"] = email;
             return Page();
         }
 

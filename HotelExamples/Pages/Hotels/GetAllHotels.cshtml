@@ -56,7 +56,7 @@
                         @item.Adresse
                     </td>
                     <td>
-                        @item.VIP
+                        @(@item.VIP == true ? "VIP status" : @item.VIP == false ? "ikke VIP status" : "VIP status ikke oplyst")
                     </td>
                     <td>
                         @item.HotelType
