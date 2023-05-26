@@ -21,18 +21,18 @@ namespace HotelExamples.Pages.Users
         }
         public IActionResult OnGet()
         {
-            try
-            {
-                string email = HttpContext.Session.GetString("Email");
-                if (email == null || email == "")
-                {
-                    return RedirectToPage("/Users/Login");
-                }
-            }
-            catch (Exception ex)
-            {
-                ViewData["ErrorMessage"] = ex.Message;
-            }
+            //try
+            //{
+            //    string email = HttpContext.Session.GetString("Email");
+            //    if (email == null || email == "")
+            //    {
+            //        return RedirectToPage("/Users/Login");
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    ViewData["ErrorMessage"] = ex.Message;
+            //}
             return Page();
 
         }
